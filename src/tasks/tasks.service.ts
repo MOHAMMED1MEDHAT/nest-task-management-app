@@ -51,9 +51,20 @@ export class TasksService {
 		return task;
 	}
 
-	updateTaskById(id: string, status: string): Task {
+	updateTaskById(id: string, taskDto): Task {
 		const task = this.getTaskById(id);
-		task.status = TaskStatus[status];
+		taskDto.title ? (task.title = taskDto.title) : task.title;
+		taskDto.description
+			? (task.description = taskDto.description)
+			: task.description;
+		taskDto.status ? (task.status = taskDto.status) : task.status;
+
+		return task;
+	}
+
+	updateTaskStatus(id: string, status: TaskStatus): Task {
+		const task = this.getTaskById(id);
+		task.status = status;
 		return task;
 	}
 
