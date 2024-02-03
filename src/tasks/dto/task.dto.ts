@@ -1,5 +1,5 @@
 import { IsEnum, IsString } from 'class-validator';
-import { TaskStatus } from '../models';
+import { TaskStatus } from '../enums';
 
 export class TaskDto {
 	@IsString()

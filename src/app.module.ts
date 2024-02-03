@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TasksModule } from './tasks/tasks.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigsModule } from './configs/configs.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeOrmConfig } from './config';
+import { typeOrmConfig } from './configs/typeorm.config';
+import { TaskRepository } from './tasks/repositories/task.repository';
 
 @Module({
 	imports: [
-		ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
+		// ConfigsModule.forRoot({ envFilePath: '.env', isGlobal: true }),
+		ConfigsModule,
 		TasksModule,
 		TypeOrmModule.forRoot(typeOrmConfig),
 	],
