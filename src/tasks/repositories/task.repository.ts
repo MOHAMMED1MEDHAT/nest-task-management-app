@@ -2,9 +2,10 @@ import { Task } from '../task.entity';
 import { Repository } from 'typeorm';
 import { DataSource } from 'typeorm';
 
-const dataSource=new DataSource()
+const dataSource=new DataSource({
+  
+})
 
-// I have to manually create a type so UserRepository exists in type space.
 export type UserRepositoryType = Repository<Task> & {
 	findById(id: number): Promise<Task | null>;
 };
