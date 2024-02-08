@@ -15,9 +15,17 @@ export const customTaskRepository: Pick<ITaskRepository, any> = {
 	async getAllTasks(
 		this: Repository<Task>,
 		tasksFilterDto?: GetTasksFilterDto,
-	): Promise<Task[]> {
+		// ): Promise<Task[]> {
+	): Promise<any> {
 		const { search, page, limit, fields, sortBy, sortOrder } = tasksFilterDto;
 		const query = this.createQueryBuilder('task');
+
+		const fieldsMap = [...fields.split(',')]
+			.filter(
+				(field) =>
+					field == 'status' || field == 'title' || field == 'description',
+			)
+			.map((field) => `task.${field}`);
 
 		if (search) {
 			query.where('task.title LIKE :search OR task.description LIKE :search', {
@@ -26,7 +34,7 @@ export const customTaskRepository: Pick<ITaskRepository, any> = {
 		}
 
 		if (fields) {
-			query.select(fields);
+			query.select(fieldsMap);
 		}
 
 		if (sortBy) {

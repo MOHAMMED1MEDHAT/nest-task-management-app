@@ -2,6 +2,8 @@ import { IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 
 type SortOrder = 'ASC' | 'DESC';
 export class GetTasksFilterDto {
+	@IsOptional()
+	@IsString()
 	search: string;
 
 	@IsOptional()
@@ -14,8 +16,7 @@ export class GetTasksFilterDto {
 
 	@IsOptional()
 	@IsString()
-	@IsIn(['title', 'description', 'status'])
-	fields: string[];
+	fields: string;
 
 	@IsOptional()
 	@IsString()
