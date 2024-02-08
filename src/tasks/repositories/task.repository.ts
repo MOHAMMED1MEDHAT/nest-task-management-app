@@ -15,8 +15,7 @@ export const customTaskRepository: Pick<ITaskRepository, any> = {
 	async getAllTasks(
 		this: Repository<Task>,
 		tasksFilterDto?: GetTasksFilterDto,
-		// ): Promise<Task[]> {
-	): Promise<any> {
+	): Promise<Task[]> {
 		const { search, page, limit, fields, sortBy, sortOrder } = tasksFilterDto;
 		const query = this.createQueryBuilder('task');
 
