@@ -1,12 +1,25 @@
-import { IsIn, IsNotEmpty, IsOptional } from 'class-validator';
-import { TaskStatus } from '../enums';
+import { IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class GetTasksFilterDto {
 	@IsOptional()
-	@IsIn([TaskStatus.OPEN, TaskStatus.DONE, TaskStatus.IN_PROGRESS])
-	status: TaskStatus;
+	@IsNumber()
+	page: number;
 
 	@IsOptional()
-	@IsNotEmpty()
-	search: string;
+	@IsNumber()
+	limit: number;
+
+	@IsOptional()
+	@IsString()
+	@IsIn(['title', 'description', 'status'])
+	fields: string;
+
+	@IsOptional()
+	@IsString()
+	@IsIn(['title', 'description', 'status'])
+	sortBy: string;
+
+	@IsOptional()
+	@IsIn(['asc', 'desc'])
+	sortOrder: string;
 }
