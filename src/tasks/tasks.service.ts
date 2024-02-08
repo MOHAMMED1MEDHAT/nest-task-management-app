@@ -1,4 +1,4 @@
-import { Get, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { TaskStatus } from './enums';
 import { TaskDto } from './dto/task.dto';
 import { GetTasksFilterDto } from './dto';

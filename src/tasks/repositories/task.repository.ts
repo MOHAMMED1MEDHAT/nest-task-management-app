@@ -12,12 +12,33 @@ export interface ITaskRepository extends Repository<Task> {
 }
 
 export const customTaskRepository: Pick<ITaskRepository, any> = {
-	// async getAllTasks(
-	// 	this: Repository<Task>,
-	// 	tasksFilterDto?: GetTasksFilterDto,
-	// ): Promise<Task[]> {
-	// 	return;
-	// },
+	async getAllTasks(
+		this: Repository<Task>,
+		tasksFilterDto?: GetTasksFilterDto,
+	): Promise<Task[]> {
+		const { search, page, limit, fields, sortBy, sortOrder } = tasksFilterDto;
+		const query = this.createQueryBuilder('task');
+
+		if (search) {
+			query.where('task.title LIKE :search OR task.description LIKE :search', {
+				search: `%${search}%`,
+			});
+		}
+
+		if (fields) {
+			query.select(fields);
+		}
+
+		if (sortBy) {
+			query.orderBy(sortBy, sortOrder);
+		}
+
+		if (page && limit) {
+			query.skip((page - 1) * limit).take(limit);
+		}
+
+		return await query.getMany();
+	},
 	async getTaskById(this: Repository<Task>, id: number): Promise<Task> {
 		return await this.findOne({ where: { id } });
 	},
