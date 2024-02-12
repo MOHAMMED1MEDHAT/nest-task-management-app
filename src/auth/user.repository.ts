@@ -1,3 +1,10 @@
+import {
+	ConflictException,
+	HttpCode,
+	HttpException,
+	HttpStatus,
+	InternalServerErrorException,
+} from '@nestjs/common';
 import { AuthDto } from './dto';
 import { User } from './user.entity';
 import { Repository, DeleteResult } from 'typeorm';
@@ -19,7 +26,15 @@ export const customUserRepository: Pick<IUserRepository, any> = {
 		user.userName = userName;
 		user.password = password;
 
-		return await user.save();
+		try {
+			return await user.save();
+		} catch (err) {
+			if (err.code === '23505') {
+				throw new ConflictException('Username already exists');
+			} else {
+				throw new InternalServerErrorException();
+			}
+		}
 	},
 
 	async getUserById(this: Repository<User>, id: number): Promise<User> {
