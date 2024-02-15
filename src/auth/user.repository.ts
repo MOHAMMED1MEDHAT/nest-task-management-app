@@ -1,18 +1,17 @@
 import {
 	ConflictException,
-	HttpCode,
-	HttpException,
-	HttpStatus,
 	InternalServerErrorException,
 } from '@nestjs/common';
-import { AuthDto } from './dto';
-import { User } from './user.entity';
 import { Repository, DeleteResult } from 'typeorm';
+import { AuthDto } from './dto';
+import * as argon from 'argon2';
+import { User } from './user.entity';
 
 export interface IUserRepository extends Repository<User> {
 	this: Repository<User>;
 	// getAllUsers(filterDto?: GetUsersFilterDto): Promise<User[]>;
 	signUp(authDto: AuthDto): Promise<User>;
+	validateUser(authDto: AuthDto): Promise<User>;
 	// getUserById(id: number): Promise<User>;
 	// createUser(UserDto: UserDto): Promise<User>;
 	// deleteUser(id: number): Promise<DeleteResult>;
@@ -22,9 +21,11 @@ export const customUserRepository: Pick<IUserRepository, any> = {
 	async signUp(this: Repository<User>, authDto: AuthDto): Promise<User> {
 		const { userName, password } = authDto;
 
+		const hash = await hashPassword(password);
+
 		const user = new User();
 		user.userName = userName;
-		user.password = password;
+		user.password = hash;
 
 		try {
 			return await user.save();
@@ -37,9 +38,22 @@ export const customUserRepository: Pick<IUserRepository, any> = {
 		}
 	},
 
+	async validateUser(authDto: AuthDto): Promise<User> {
+		const { userName, password } = authDto;
+
+		const user = await this.findOne({ where: { userName } });
+
+		if (!user || !(await user.validatePassword(password))) {
+			return null;
+		}
+
+		return user;
+	},
+
 	async getUserById(this: Repository<User>, id: number): Promise<User> {
 		return await this.findOne({ where: { id } });
 	},
+
 	// async createUser(this: Repository<User>, UserDto: UserDto): Promise<User> {
 	// 	const { title, description } = UserDto;
 	// 	const User = new User();
@@ -55,3 +69,7 @@ export const customUserRepository: Pick<IUserRepository, any> = {
 		return await this.delete(id);
 	},
 };
+
+async function hashPassword(password: string): Promise<string> {
+	return await argon.hash(password);
+}
