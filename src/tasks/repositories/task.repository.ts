@@ -3,7 +3,11 @@ import { TaskDto, GetTasksFilterDto } from '../dto';
 import { TaskStatus } from '../enums';
 import { Task } from '../task.entity';
 import { Repository, DeleteResult } from 'typeorm';
-import { NotFoundException } from '@nestjs/common';
+import {
+	InternalServerErrorException,
+	Logger,
+	NotFoundException,
+} from '@nestjs/common';
 
 export interface ITaskRepository extends Repository<Task> {
 	this: Repository<Task>;
@@ -12,6 +16,8 @@ export interface ITaskRepository extends Repository<Task> {
 	createTask(taskDto: TaskDto, user: User): Promise<Task>;
 	deleteTask(id: number, user: User): Promise<DeleteResult>;
 }
+
+const logger = new Logger('TaskRepository');
 
 export const customTaskRepository: Pick<ITaskRepository, any> = {
 	async getAllTasks(
@@ -48,7 +54,15 @@ export const customTaskRepository: Pick<ITaskRepository, any> = {
 			query.skip((page - 1) * limit).take(limit);
 		}
 
-		return await query.getMany();
+		try {
+			return await query.getMany();
+		} catch (err) {
+			logger.error(
+				`Failed to get tasks for user "${user.userName}". Filters: ${JSON.stringify(tasksFilterDto)}`,
+				err.stack,
+			);
+			throw new InternalServerErrorException();
+		}
 	},
 
 	async getTaskById(
@@ -76,8 +90,17 @@ export const customTaskRepository: Pick<ITaskRepository, any> = {
 		task.description = description;
 		task.status = TaskStatus.OPEN;
 		task.user = user;
-		await task.save();
-
+		try {
+			await task.save();
+		} catch (err) {
+			logger.error(
+				`Failed to create a task for user "${user.userName}". Data: ${JSON.stringify(
+					taskDto,
+				)}`,
+				err.stack,
+			);
+			throw new InternalServerErrorException();
+		}
 		delete task.user;
 
 		return task;

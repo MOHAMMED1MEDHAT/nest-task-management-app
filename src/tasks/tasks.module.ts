@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import {
 	TypeOrmModule,
@@ -23,6 +23,7 @@ import { AuthModule } from 'src/auth/auth.module';
 			},
 		},
 		TasksService,
+		Logger,
 	],
 })
 export class TasksModule {}
