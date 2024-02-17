@@ -1,3 +1,4 @@
+import { User } from 'src/auth/user.entity';
 import { TaskDto, GetTasksFilterDto } from '../dto';
 import { TaskStatus } from '../enums';
 import { Task } from '../task.entity';
@@ -7,7 +8,7 @@ export interface ITaskRepository extends Repository<Task> {
 	this: Repository<Task>;
 	getAllTasks(filterDto?: GetTasksFilterDto): Promise<Task[]>;
 	getTaskById(id: number): Promise<Task>;
-	createTask(taskDto: TaskDto): Promise<Task>;
+	createTask(taskDto: TaskDto, user: User): Promise<Task>;
 	deleteTask(id: number): Promise<DeleteResult>;
 }
 
@@ -49,12 +50,17 @@ export const customTaskRepository: Pick<ITaskRepository, any> = {
 	async getTaskById(this: Repository<Task>, id: number): Promise<Task> {
 		return await this.findOne({ where: { id } });
 	},
-	async createTask(this: Repository<Task>, taskDto: TaskDto): Promise<Task> {
+	async createTask(
+		this: Repository<Task>,
+		taskDto: TaskDto,
+		user: User,
+	): Promise<Task> {
 		const { title, description } = taskDto;
 		const task = new Task();
 		task.title = title;
 		task.description = description;
 		task.status = TaskStatus.OPEN;
+		task.user = user;
 		await task.save();
 
 		return task;

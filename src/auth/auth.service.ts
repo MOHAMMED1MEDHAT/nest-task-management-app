@@ -26,7 +26,10 @@ export class AuthService {
 		}
 
 		const payload: JwtPayload = { userName: user.userName };
-		const accessToken = this.jwtService.sign(payload);
+		const accessToken = this.jwtService.sign(payload, {
+			expiresIn: process.env.JWT_EXPIRES_IN,
+			secret: process.env.JWT_SECRET,
+		});
 
 		return { accessToken };
 	}
