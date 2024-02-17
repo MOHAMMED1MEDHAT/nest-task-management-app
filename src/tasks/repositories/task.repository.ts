@@ -3,29 +3,26 @@ import { TaskDto, GetTasksFilterDto } from '../dto';
 import { TaskStatus } from '../enums';
 import { Task } from '../task.entity';
 import { Repository, DeleteResult } from 'typeorm';
+import { NotFoundException } from '@nestjs/common';
 
 export interface ITaskRepository extends Repository<Task> {
 	this: Repository<Task>;
-	getAllTasks(filterDto?: GetTasksFilterDto): Promise<Task[]>;
-	getTaskById(id: number): Promise<Task>;
+	getAllTasks(user: User, filterDto?: GetTasksFilterDto): Promise<Task[]>;
+	getTaskById(id: number, user: User): Promise<Task>;
 	createTask(taskDto: TaskDto, user: User): Promise<Task>;
-	deleteTask(id: number): Promise<DeleteResult>;
+	deleteTask(id: number, user: User): Promise<DeleteResult>;
 }
 
 export const customTaskRepository: Pick<ITaskRepository, any> = {
 	async getAllTasks(
 		this: Repository<Task>,
+		user: User,
 		tasksFilterDto?: GetTasksFilterDto,
 	): Promise<Task[]> {
 		const { search, page, limit, fields, sortBy, sortOrder } = tasksFilterDto;
 		const query = this.createQueryBuilder('task');
 
-		const fieldsMap = [...fields.split(',')]
-			.filter(
-				(field) =>
-					field == 'status' || field == 'title' || field == 'description',
-			)
-			.map((field) => `task.${field}`);
+		query.where('task.userId = :userId', { userId: user.id });
 
 		if (search) {
 			query.where('task.title LIKE :search OR task.description LIKE :search', {
@@ -34,6 +31,12 @@ export const customTaskRepository: Pick<ITaskRepository, any> = {
 		}
 
 		if (fields) {
+			const fieldsMap = [...fields.split(',')]
+				.filter(
+					(field) =>
+						field == 'status' || field == 'title' || field == 'description',
+				)
+				.map((field) => `task.${field}`);
 			query.select(fieldsMap);
 		}
 
@@ -47,9 +50,21 @@ export const customTaskRepository: Pick<ITaskRepository, any> = {
 
 		return await query.getMany();
 	},
-	async getTaskById(this: Repository<Task>, id: number): Promise<Task> {
-		return await this.findOne({ where: { id } });
+
+	async getTaskById(
+		this: Repository<Task>,
+		id: number,
+		user: User,
+	): Promise<Task> {
+		const found = await this.findOne({ where: { id, userId: user.id } });
+
+		if (!found) {
+			throw new NotFoundException(`Task with ID: ${id} not found`);
+		}
+
+		return found;
 	},
+
 	async createTask(
 		this: Repository<Task>,
 		taskDto: TaskDto,
@@ -63,10 +78,20 @@ export const customTaskRepository: Pick<ITaskRepository, any> = {
 		task.user = user;
 		await task.save();
 
+		delete task.user;
+
 		return task;
 	},
 
-	async deleteTask(this: Repository<Task>, id: number): Promise<DeleteResult> {
-		return await this.delete(id);
+	async deleteTask(
+		this: Repository<Task>,
+		id: number,
+		user: User,
+	): Promise<void> {
+		const result = await this.delete({ id, userId: user.id });
+
+		if (result.affected === 0) {
+			throw new NotFoundException(`Task with ID: ${id} not found`);
+		}
 	},
 };
