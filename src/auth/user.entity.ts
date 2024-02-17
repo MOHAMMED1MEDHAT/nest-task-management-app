@@ -20,7 +20,7 @@ export class User extends BaseEntity {
 	@Column()
 	password: string;
 
-	async validatePassword(password: string): Promise<boolean> {
+	async isPasswordValid(password: string): Promise<boolean> {
 		return await argon.verify(this.password, password);
 	}
 }
