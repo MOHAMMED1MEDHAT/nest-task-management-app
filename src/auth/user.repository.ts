@@ -43,7 +43,7 @@ export const customUserRepository: Pick<IUserRepository, any> = {
 
 		const user = await this.findOne({ where: { userName } });
 
-		if (!user || !(await user.validatePassword(password))) {
+		if (!user || !(await user.isPasswordValid(password))) {
 			return null;
 		}
 
