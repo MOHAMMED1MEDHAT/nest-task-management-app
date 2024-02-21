@@ -23,10 +23,8 @@ describe('TaskService', () => {
 			],
 		}).compile();
 
-		taskService = await module.get<TasksService>(TasksService);
-		taskRepository = await module.get<Repository<Task>>(
-			getRepositoryToken(Task),
-		);
+		taskService = module.get<TasksService>(TasksService);
+		taskRepository = module.get<Repository<Task>>(getRepositoryToken(Task));
 	});
 
 	describe('getTasks', () => {
