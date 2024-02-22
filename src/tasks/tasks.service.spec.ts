@@ -4,8 +4,13 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Task } from './task.entity';
 import { GetTasksFilterDto } from './dto';
 import { Repository } from 'typeorm';
+import { User } from 'src/auth/user.entity';
 
-const mockUser = { name: 'TEST USER' };
+const mockUser = {
+	userName: 'test user',
+	password: 'Hash test',
+	id: 1,
+};
 
 const mockTaskRepository = {
 	getTasks: jest.fn(),
@@ -40,7 +45,7 @@ describe('TaskService', () => {
 				sortOrder: 'DESC',
 			};
 
-			// taskService.getTasks(filter, mockUser);
+			taskService.getAllTasks(filter, mockUser);
 			expect(taskRepository).toHaveBeenCalledTimes(1);
 		});
 	});
