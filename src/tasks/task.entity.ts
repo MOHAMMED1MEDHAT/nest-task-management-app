@@ -6,7 +6,7 @@ import {
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 import { TaskStatus } from './enums';
-import { User } from 'src/auth/user.entity';
+import { User } from './../auth/user.entity';
 
 @Entity('tasks')
 export class Task extends BaseEntity {

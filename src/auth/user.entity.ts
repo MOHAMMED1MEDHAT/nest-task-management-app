@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 import * as argon from 'argon2';
-import { Task } from 'src/tasks/task.entity';
+import { Task } from './../tasks/task.entity';
 
 @Entity('users')
 @Unique(['userName'])

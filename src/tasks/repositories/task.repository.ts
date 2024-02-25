@@ -1,4 +1,4 @@
-import { User } from 'src/auth/user.entity';
+import { User } from './../../auth/user.entity';
 import { TaskDto, GetTasksFilterDto } from '../dto';
 import { TaskStatus } from '../enums';
 import { Task } from '../task.entity';

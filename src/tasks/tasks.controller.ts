@@ -17,8 +17,8 @@ import { GetTasksFilterDto, TaskDto } from './dto';
 import { TaskStatusValidationPipe } from './pipes';
 import { Task } from './task.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { GetUser } from 'src/auth/decorators';
-import { User } from 'src/auth/user.entity';
+import { GetUser } from './../auth/decorators';
+import { User } from './../auth/user.entity';
 
 @Controller('tasks')
 @UseGuards(AuthGuard())
