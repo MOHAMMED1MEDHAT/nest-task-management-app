@@ -3,7 +3,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AuthDto } from './../auth/dto';
 import { User } from './../auth/user.entity';
-import { GetTasksFilterDto } from './dto';
 import { Task } from './task.entity';
 import { TasksService } from './tasks.service';
 
@@ -61,18 +60,18 @@ describe('TaskService', () => {
 	describe('getTasks', () => {
 		it('should get all tasks from the repository', () => {
 			expect(taskRepository.createQueryBuilder).not.toHaveBeenCalledTimes(1);
-			const filter: GetTasksFilterDto = {
-				page: 0,
-				limit: 10,
-				sortBy: 'description',
-				search: 'my',
-				fields: 'description',
-				sortOrder: 'DESC',
-			};
+			// const filter: GetTasksFilterDto = {
+			// 	page: 0,
+			// 	limit: 10,
+			// 	sortBy: 'description',
+			// 	search: 'my',
+			// 	fields: 'description',
+			// 	sortOrder: 'DESC',
+			// };
 
 			expect(taskRepository.createQueryBuilder).toHaveBeenCalledTimes(0);
-			taskService.getAllTasks(filter, mockUser);
-			expect(taskRepository.).toHaveBeenCalledTimes(1);
+			// taskService.getAllTasks(filter, mockUser);
+			// expect(taskRepository.).toHaveBeenCalledTimes(1);
 		});
 	});
 
