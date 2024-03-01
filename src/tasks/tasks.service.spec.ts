@@ -75,11 +75,11 @@ describe('TaskService', () => {
 		});
 	});
 
-	// describe('getTaskById', () => {
-	// 	it('get a task by id', () => {
-	// 		const taskId = 1;
-	// 		taskService.getTaskById(taskId, mockUser);
-	// 		expect(taskRepository.findOne).toHaveBeenCalledTimes(1);
-	// 	});
-	// });
+	describe('getTaskById', () => {
+		it('get a task by id', () => {
+			const taskId = 1;
+			taskService.getTaskById(taskId, mockUser);
+			expect(taskRepository.findOne).toHaveBeenCalledTimes(1);
+		});
+	});
 });
