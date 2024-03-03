@@ -1,27 +1,26 @@
 import {
 	ConflictException,
+	Injectable,
 	InternalServerErrorException,
+	Logger,
 } from '@nestjs/common';
-import { Repository, DeleteResult } from 'typeorm';
-import { AuthDto } from './dto';
 import * as argon from 'argon2';
+import { DataSource, Repository } from 'typeorm';
+import { AuthDto } from './dto';
 import { User } from './user.entity';
 
-export interface IUserRepository extends Repository<User> {
-	this: Repository<User>;
-	// getAllUsers(filterDto?: GetUsersFilterDto): Promise<User[]>;
-	signUp(authDto: AuthDto): Promise<User>;
-	validateUser(authDto: AuthDto): Promise<User>;
-	// getUserById(id: number): Promise<User>;
-	// createUser(UserDto: UserDto): Promise<User>;
-	// deleteUser(id: number): Promise<DeleteResult>;
-}
+@Injectable()
+export class UserRepository extends Repository<User> {
+	private logger = new Logger('UserRepository');
+	constructor(private dataSource: DataSource) {
+		super(User, dataSource.createEntityManager());
+		this.dataSource = dataSource;
+	}
 
-export const customUserRepository: Pick<IUserRepository, any> = {
-	async signUp(this: Repository<User>, authDto: AuthDto): Promise<User> {
+	async signUp(authDto: AuthDto): Promise<User> {
 		const { userName, password } = authDto;
 
-		const hash = await hashPassword(password);
+		const hash = await this.hashPassword(password);
 
 		const user = new User();
 		user.userName = userName;
@@ -30,13 +29,14 @@ export const customUserRepository: Pick<IUserRepository, any> = {
 		try {
 			return await user.save();
 		} catch (err) {
+			this.logger.error(err.message);
 			if (err.code === '23505') {
 				throw new ConflictException('Username already exists');
 			} else {
 				throw new InternalServerErrorException();
 			}
 		}
-	},
+	}
 
 	async validateUser(authDto: AuthDto): Promise<User> {
 		const { userName, password } = authDto;
@@ -48,28 +48,21 @@ export const customUserRepository: Pick<IUserRepository, any> = {
 		}
 
 		return user;
-	},
+	}
 
-	async getUserById(this: Repository<User>, id: number): Promise<User> {
+	async getUserById(id: number): Promise<User> {
 		return await this.findOne({ where: { id } });
-	},
+	}
 
-	// async createUser(this: Repository<User>, UserDto: UserDto): Promise<User> {
-	// 	const { title, description } = UserDto;
-	// 	const User = new User();
-	// 	User.title = title;
-	// 	User.description = description;
-	// 	User.status = UserStatus.OPEN;
-	// 	await User.save();
+	async deleteUser(id: number): Promise<void> {
+		await this.delete({ id });
+	}
 
-	// 	return User;
-	// },
+	async getUserByUserName(userName: string): Promise<User> {
+		return await this.findOne({ where: { userName } });
+	}
 
-	async deleteUser(this: Repository<User>, id: number): Promise<DeleteResult> {
-		return await this.delete(id);
-	},
-};
-
-async function hashPassword(password: string): Promise<string> {
-	return await argon.hash(password);
+	private async hashPassword(password: string): Promise<string> {
+		return await argon.hash(password);
+	}
 }
