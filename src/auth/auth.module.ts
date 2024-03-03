@@ -21,17 +21,6 @@ import { UserRepository } from './user.repository';
 	],
 	controllers: [AuthController],
 	providers: [UserRepository, AuthService, JwtStrategy],
-	// providers: [
-	// 	{
-	// 		provide: getRepositoryToken(User),
-	// 		inject: [getDataSourceToken()],
-	// 		useFactory(dataSource: DataSource): any {
-	// 			return dataSource.getRepository(User).extend(customUserRepository);
-	// 		},
-	// 	},
-	// 	AuthService,
-	// 	JwtStrategy,
-	// ],
 	exports: [JwtStrategy, PassportModule],
 })
 export class AuthModule {}
