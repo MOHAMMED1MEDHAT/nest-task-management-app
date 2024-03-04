@@ -69,7 +69,7 @@ export class TaskRepository extends Repository<Task> {
 		const found = await this.findOne({ where: { id, userId: user.id } });
 
 		if (!found) {
-			throw new InternalServerErrorException(`Task with ID: ${id} not found`);
+			return null;
 		}
 
 		return found;
