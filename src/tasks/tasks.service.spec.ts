@@ -1,3 +1,4 @@
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from 'src/auth/user.entity';
 import { Repository } from 'typeorm';
@@ -17,6 +18,7 @@ const mockTaskRepository = {
 	getTaskById: jest.fn(),
 	createTask: jest.fn(),
 	deleteTask: jest.fn(),
+	save: jest.fn(),
 };
 
 describe('TaskService', () => {
@@ -74,11 +76,40 @@ describe('TaskService', () => {
 
 	describe('getTaskById', () => {
 		it('should get a task by id', async () => {
+			const getTaskByIdSpyOn = jest
+				.spyOn(taskRepository, 'getTaskById')
+				.mockResolvedValue({
+					title: 'test1',
+					description: 'this task is for testing',
+					status: TaskStatus.OPEN,
+				} as Task);
+
 			expect(taskRepository.getTaskById).toHaveBeenCalledTimes(0);
 			await taskService.getTaskById(1, <User>mockUser);
 			expect(taskRepository.getTaskById).toHaveBeenCalledTimes(1);
+			expect(getTaskByIdSpyOn).toHaveBeenCalledWith(1, <User>mockUser);
+		});
+		it('should throw NotFoundException', () => {
+			const getTaskByIdSpyOn = jest
+				.spyOn(taskRepository, 'getTaskById')
+				.mockResolvedValue(null);
+			expect(taskService.getTaskById(1, <User>mockUser)).rejects.toThrow(
+				NotFoundException,
+			);
 		});
 	});
+
+	// describe('updateTaskStatus', () => {
+	// 	it('should update task status', async () => {
+	// 		expect(taskRepository.save).toHaveBeenCalledTimes(0);
+	// 		await taskService.updateTaskStatus(
+	// 			1,
+	// 			<User>mockUser,
+	// 			TaskStatus.IN_PROGRESS,
+	// 		);
+	// 		expect(taskRepository.save).toHaveBeenCalledTimes(1);
+	// 	});
+	// });
 
 	describe('deleteTask', () => {
 		it('should delete a task by id', async () => {
