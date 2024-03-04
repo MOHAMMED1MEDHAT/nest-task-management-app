@@ -75,6 +75,16 @@ describe('TaskService', () => {
 	describe('getTaskById', () => {
 		it('should get a task by id', async () => {
 			expect(taskRepository.getTaskById).toHaveBeenCalledTimes(0);
+			await taskService.getTaskById(1, <User>mockUser);
+			expect(taskRepository.getTaskById).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe('deleteTask', () => {
+		it('should delete a task by id', async () => {
+			expect(taskRepository.deleteTask).toHaveBeenCalledTimes(0);
+			await taskService.deleteTaskById(1, <User>mockUser);
+			expect(taskRepository.deleteTask).toHaveBeenCalledTimes(1);
 		});
 	});
 });

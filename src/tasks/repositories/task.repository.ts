@@ -7,6 +7,7 @@ import {
 	Injectable,
 	InternalServerErrorException,
 	Logger,
+	NotFoundException,
 } from '@nestjs/common';
 import { User } from 'src/auth/user.entity';
 import { DataSource, Repository } from 'typeorm';
@@ -69,7 +70,7 @@ export class TaskRepository extends Repository<Task> {
 		const found = await this.findOne({ where: { id, userId: user.id } });
 
 		if (!found) {
-			return null;
+			throw new NotFoundException(`Task with ID: ${id} not found`);
 		}
 
 		return found;
