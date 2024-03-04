@@ -50,6 +50,7 @@ describe('TaskService', () => {
 				status: TaskStatus.OPEN,
 			};
 
+			expect(taskRepository.createTask).toHaveBeenCalledTimes(0);
 			taskService.createTask(taskDto, <User>mockUser);
 			expect(taskRepository.createTask).toHaveBeenCalledTimes(1);
 		});
@@ -96,20 +97,29 @@ describe('TaskService', () => {
 			expect(taskService.getTaskById(1, <User>mockUser)).rejects.toThrow(
 				NotFoundException,
 			);
+			expect(getTaskByIdSpyOn).toHaveBeenCalledWith(1, <User>mockUser);
 		});
 	});
 
-	// describe('updateTaskStatus', () => {
-	// 	it('should update task status', async () => {
-	// 		expect(taskRepository.save).toHaveBeenCalledTimes(0);
-	// 		await taskService.updateTaskStatus(
-	// 			1,
-	// 			<User>mockUser,
-	// 			TaskStatus.IN_PROGRESS,
-	// 		);
-	// 		expect(taskRepository.save).toHaveBeenCalledTimes(1);
-	// 	});
-	// });
+	describe('updateTaskStatus', () => {
+		it('should update task status', async () => {
+			const getTaskByIdSpyOn = jest
+				.spyOn(taskRepository, 'getTaskById')
+				.mockResolvedValue({
+					title: 'test1',
+					description: 'this task is for testing',
+					status: TaskStatus.OPEN,
+				} as Task);
+			expect(taskRepository.save).toHaveBeenCalledTimes(0);
+			await taskService.updateTaskStatus(
+				2,
+				<User>mockUser,
+				TaskStatus.IN_PROGRESS,
+			);
+			expect(taskRepository.save).toHaveBeenCalledTimes(1);
+			expect(getTaskByIdSpyOn).toHaveBeenCalledWith(2, <User>mockUser);
+		});
+	});
 
 	describe('deleteTask', () => {
 		it('should delete a task by id', async () => {
