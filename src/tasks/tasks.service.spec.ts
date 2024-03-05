@@ -10,7 +10,7 @@ import { TasksService } from './tasks.service';
 
 const mockUser = {
 	userName: 'test user',
-	password: 'Hash test',
+	password: 'test Hash',
 };
 
 const mockTaskRepository = {
