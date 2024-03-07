@@ -42,19 +42,19 @@ describe('TaskService', () => {
 		);
 	});
 
-	// describe('createTask', () => {
-	// 	it('create a task', () => {
-	// 		const taskDto = {
-	// 			title: 'Test task',
-	// 			description: 'Test desc',
-	// 			status: TaskStatus.OPEN,
-	// 		};
+	describe('createTask', () => {
+		it('create a task', () => {
+			const taskDto = {
+				title: 'Test task',
+				description: 'Test desc',
+				status: TaskStatus.OPEN,
+			};
 
-	// 		expect(taskRepository.createTask).toHaveBeenCalledTimes(0);
-	// 		taskService.createTask(taskDto, <User>mockUser);
-	// 		expect(taskRepository.createTask).toHaveBeenCalledTimes(1);
-	// 	});
-	// });
+			expect(taskRepository.createTask).toHaveBeenCalledTimes(0);
+			taskService.createTask(taskDto, <User>mockUser);
+			expect(taskRepository.createTask).toHaveBeenCalledTimes(1);
+		});
+	});
 
 	describe('getTasks', () => {
 		it('should get all tasks from the repository', async () => {
