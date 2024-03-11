@@ -50,14 +50,9 @@ export class UserRepository extends Repository<User> {
 		return user;
 	}
 
-	async createUser(authDto: AuthDto): Promise<User> {
-		const { userName, password } = authDto;
-
-		const hash = await this.hashPassword(password);
-
+	async createUser(userName: string, email: string): Promise<User> {
 		const user = new User();
 		user.userName = userName;
-		user.password = hash;
 
 		return await user.save();
 	}
