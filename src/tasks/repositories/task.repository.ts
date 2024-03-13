@@ -1,8 +1,3 @@
-// import { User } from './../../auth/user.entity';
-// import { TaskDto, GetTasksFilterDto } from '../dto';
-// import { TaskStatus } from '../enums';
-import { Task } from '../task.entity';
-// import { Repository, DeleteResult, DataSource } from 'typeorm';
 import {
 	Injectable,
 	InternalServerErrorException,
@@ -12,6 +7,7 @@ import { User } from 'src/auth/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { GetTasksFilterDto, TaskDto } from '../dto';
 import { TaskStatus } from '../enums';
+import { Task } from '../task.entity';
 
 @Injectable()
 export class TaskRepository extends Repository<Task> {
