@@ -10,17 +10,20 @@ import {
 	Post,
 	Query,
 	UseGuards,
+	UseInterceptors,
 } from '@nestjs/common';
-import { TasksService } from './tasks.service';
-import { TaskStatus } from './enums';
-import { GetTasksFilterDto, TaskDto } from './dto';
-import { TaskStatusValidationPipe } from './pipes';
-import { Task } from './task.entity';
 import { AuthGuard } from '@nestjs/passport';
+import { LoggingInterceptor } from 'src/common/logging.interceptor';
 import { GetUser } from './../auth/decorators';
 import { User } from './../auth/user.entity';
+import { GetTasksFilterDto, TaskDto } from './dto';
+import { TaskStatus } from './enums';
+import { TaskStatusValidationPipe } from './pipes';
+import { Task } from './task.entity';
+import { TasksService } from './tasks.service';
 
 @Controller('tasks')
+@UseInterceptors(LoggingInterceptor)
 @UseGuards(AuthGuard())
 export class TasksController {
 	private logger = new Logger('TasksController');
