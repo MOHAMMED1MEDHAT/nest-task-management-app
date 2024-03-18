@@ -50,7 +50,7 @@ export class UserRepository extends Repository<User> {
 		return user;
 	}
 
-	async createUser(userName: string, email: string): Promise<User> {
+	async createUser(userName: string): Promise<User> {
 		const user = new User();
 		user.userName = userName;
 
