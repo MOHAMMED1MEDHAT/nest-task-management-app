@@ -12,6 +12,7 @@ import { User } from './user.entity';
 @Injectable()
 export class UserRepository extends Repository<User> {
 	private logger = new Logger('UserRepository');
+
 	constructor(private dataSource: DataSource) {
 		super(User, dataSource.createEntityManager());
 		this.dataSource = dataSource;
